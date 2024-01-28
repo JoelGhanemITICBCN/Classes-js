@@ -45,6 +45,7 @@ function afegirModul() {
     console.log("modul");
     console.log(modul);
     llistatModuls.push(modul);
+    llistatCicles[cicle].modul.push(modul);
     //Printem la llista
     console.log("llistatModuls");
     console.log(llistatModuls);
@@ -110,43 +111,10 @@ function addEventListeners(llistat) {
         });
 
         document.getElementById(`btnCalculaHores${index}`).addEventListener('click', function (event) {
-            //Instancia cicle
-            let nomCicle = llistatCicles[index].nom;
-            let categoria = llistatCicles[index].categoria;
-            let num = llistatCicles[index].numAlumnes;
-            let abreviatura = llistatCicles[index].abreviatura;
-            console.log("llistat moduls en el hores");
-            console.log(llistatModuls[index].hores);
-            let seEncuentraCicle = llistatCicles.find(cicle => cicle.nom === nomCicle);
-            let cicleObject = llistatCicles[index];
-            if (!seEncuentraCicle) {
-                 cicleObject = new Cicle(nomCicle, categoria, num, abreviatura);
-                llistatCicles.push(cicleObject);
-            }
-            //Instancia modul
-            let cicle = llistatModuls[index].cicle;
-            let modul_nom = llistatModuls[index].modul_nom;
-            let modul_num = llistatModuls[index].modul_num;
-            let modul_hores = parseInt(llistatModuls[index].hores);
-            console.log("llistatModuls[index].modul_hores");
-            console.log(llistatModuls[index].modul_hores);
-            console.log("modul_hores");
-            console.log(modul_hores);
-
-
-            let modul = new Modul(cicle, modul_nom, modul_num, modul_hores);
-            cicleObject.moduls.push(modul);
-            if (cicleObject) {
-                /*
-                console.log("cicleObject.toString()");
-                console.log(cicleObject.toString());
-                */
-                let totalHores = cicleObject.calculHores();
-                console.log('Total de horas:', totalHores);
-            } else {
-                console.log("No se encontró ningún cicle con el nombre", nomCicle);
-            }
-
+            // Instancia cicle
+        console.log(llistatCicles[index].moduls);
+                llistatCicles[index].calculHores(index);
+            
         });
     });
 }
@@ -230,14 +198,16 @@ class Cicle {
         return str;
     }
 
-    calculHores() {
-        console.log("thisModuls");
-        console.log(this.moduls);
-        this.moduls = llistatModuls;
-        return this.moduls.reduce((total, modul) => total + modul.modul_hores, 0);
+    calculHores(i) {
+        console.log("llega calcul hores");
+        let totalHores = 0;
+        llistatCicles[i].moduls.forEach(modul => {
+            totalHores += parseInt(modul.modul_hores);
+        });
+        console.log(totalHores);
+        alert(`Hores totals del cicle: ${totalHores}`);
     }
-
-}
+}    
 
 //Creacio de la classe modul
 class Modul {
