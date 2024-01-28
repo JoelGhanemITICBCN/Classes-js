@@ -17,7 +17,7 @@ function afegirCicle() {
         llistatCicles.push(cicle);
     } else {
         //Editar cicle
-    cicle = { nom: nom, categoria: categoria, numAlumnes: numAlumnes, abreviatura: abreviatura }
+        cicle = { nom: nom, categoria: categoria, numAlumnes: numAlumnes, abreviatura: abreviatura }
 
     }
 
@@ -81,22 +81,24 @@ function printLlistat(llistat) {
         str += `<button type="button" id="btnEliminarCicle${index}" data-index="${index}"class="eliminar focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">Eliminar</button>
         <button type="button" id="btnEditaCicle${index}" data-index="${index}" class="editar focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">Editar</button>
         <button type="button" id="btnCalculaHores${index}"  data-index="${index}" class="calcular focus:outline-none text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">Càlcul hores</button>`;
- 
-   
+
+
     });
     let llistatElement = document.getElementById("llistat");
     llistatElement.innerHTML = "";
     llistatElement.innerHTML = str;
     setTimeout(addEventListeners(llistat), 0);
 }
-     function addEventListeners(llistat){
-        llistat.forEach(function (element,index) {
-     document.getElementById(`btnEliminarCicle${index}`).addEventListener('click', function (event) {
+function addEventListeners(llistat) {
+    llistat.forEach(function (element, index) {
+        document.getElementById(`btnEliminarCicle${index}`).addEventListener('click', function (event) {
+            /*
             console.log("llistat");
             console.log(llistat);
             console.log("index");
             console.log(index);
             console.log('Eliminar', event.target.dataset.index);
+            */
             removeCicle(index);
             actualitzarSelector();
             printLlistat(llistat);
@@ -108,11 +110,46 @@ function printLlistat(llistat) {
         });
 
         document.getElementById(`btnCalculaHores${index}`).addEventListener('click', function (event) {
-            calculHores();
-            console.log('Calcular horas', event.target.dataset.index);
+            //Instancia cicle
+            let nomCicle = llistatCicles[index].nom;
+            let categoria = llistatCicles[index].categoria;
+            let num = llistatCicles[index].numAlumnes;
+            let abreviatura = llistatCicles[index].abreviatura;
+            console.log("llistat moduls en el hores");
+            console.log(llistatModuls[index].hores);
+            let seEncuentraCicle = llistatCicles.find(cicle => cicle.nom === nomCicle);
+            let cicleObject = llistatCicles[index];
+            if (!seEncuentraCicle) {
+                 cicleObject = new Cicle(nomCicle, categoria, num, abreviatura);
+                llistatCicles.push(cicleObject);
+            }
+            //Instancia modul
+            let cicle = llistatModuls[index].cicle;
+            let modul_nom = llistatModuls[index].modul_nom;
+            let modul_num = llistatModuls[index].modul_num;
+            let modul_hores = parseInt(llistatModuls[index].hores);
+            console.log("llistatModuls[index].modul_hores");
+            console.log(llistatModuls[index].modul_hores);
+            console.log("modul_hores");
+            console.log(modul_hores);
+
+
+            let modul = new Modul(cicle, modul_nom, modul_num, modul_hores);
+            cicleObject.moduls.push(modul);
+            if (cicleObject) {
+                /*
+                console.log("cicleObject.toString()");
+                console.log(cicleObject.toString());
+                */
+                let totalHores = cicleObject.calculHores();
+                console.log('Total de horas:', totalHores);
+            } else {
+                console.log("No se encontró ningún cicle con el nombre", nomCicle);
+            }
+
         });
     });
-    }
+}
 
 //Funció per actualitzar el selector de cicles cada vegada que afegim un cicle
 function actualitzarSelector() {
@@ -194,9 +231,12 @@ class Cicle {
     }
 
     calculHores() {
-        console.log("calculHores");
-        return this.moduls.reduce((total, modul) => total + modul.hores, 0);
+        console.log("thisModuls");
+        console.log(this.moduls);
+        this.moduls = llistatModuls;
+        return this.moduls.reduce((total, modul) => total + modul.modul_hores, 0);
     }
+
 }
 
 //Creacio de la classe modul
