@@ -1,3 +1,6 @@
+import { Cicle } from "./Cicle.js";
+import { Modul } from "./Modul.js";
+
 let btnEliminarCicle;
 let strTotal = "";
 let llistatCicles = [];
@@ -9,55 +12,41 @@ function afegirCicle() {
     let numAlumnes = document.getElementById("cicle_alumnes").value;
     let abreviatura = document.getElementById("cicle_abr").value;
 
-    let cicle = { nom: nom, categoria: categoria, numAlumnes: numAlumnes, abreviatura: abreviatura }
-    console.log(cicle);
+    let cicle = new Cicle(nom, categoria, numAlumnes, abreviatura);
 
     if (document.getElementById("editCicle").value === "-1") {
-        //Afegim el cicle al llistat
         llistatCicles.push(cicle);
     } else {
-        //Editar cicle
-        cicle = { nom: nom, categoria: categoria, numAlumnes: numAlumnes, abreviatura: abreviatura }
-
+        let index = parseInt(document.getElementById("editCicle").value);
+        if (index >= 0 && index < llistatCicles.length) {
+            llistatCicles[index] = cicle; 
+        }
+        netejarFormularis();
     }
 
-    //Actualitzem el selector
     actualitzarSelector();
-
-    //Printem la llista
-    console.log("llistatCicles");
-    console.log(llistatCicles);
     printLlistat(llistatCicles);
-
-    //Netegem els formularis
     netejarFormularis();
-
     document.getElementById("editCicle").value = -1;
 }
 
 function afegirModul() {
-    let cicle = document.getElementById("modul_cicle").value;
+    let cicleIndex = document.getElementById("modul_cicle").value;
     let modul_nom = document.getElementById("modul_nom").value;
     let modul_num = document.getElementById("modul_num").value;
     let modul_hores = document.getElementById("modul_hores").value;
 
-    let modul = { cicle: cicle, nom: modul_nom, num: modul_num, hores: modul_hores }
-    console.log("modul");
+    let modul = new Modul(modul_nom, modul_num, modul_hores);
     console.log(modul);
-    llistatModuls.push(modul);
-    llistatCicles[cicle].modul.push(modul);
-    //Printem la llista
-    console.log("llistatModuls");
-    console.log(llistatModuls);
 
-    //No se si vols imprimir els moduls o no 
+    if (cicleIndex >= 0 && cicleIndex < llistatCicles.length) {
+        llistatCicles[cicleIndex].afegirModul(modul_nom, modul_num, modul_hores);
+        console.log("llistatModuls");
+        console.log(llistatCicles[cicleIndex].moduls);
+    }
 
-    /*
-    actualitzarSelector();
-    printLlistat(llistatModuls);
-    //Netegem els formularis
-    */
     netejarFormularis();
+    updateHTML();
 }
 
 function printLlistat(llistat) {
@@ -151,12 +140,14 @@ function removeCicle(index) {
 
 //Funció per editar un cicle
 function editCicle(i) {
+    if(1 !== -1){
     document.getElementById("cicle_nom").value = llistatCicles[i].nom;
     document.getElementById("cicle_categoria").value = llistatCicles[i].categoria;
     document.getElementById("cicle_alumnes").value = llistatCicles[i].numAlumnes;
     document.getElementById("cicle_abr").value = llistatCicles[i].abreviatura;
 
     document.getElementById("editCicle").value = i;
+    }
 }
 
 //Funció per netejar els formularis
@@ -172,58 +163,6 @@ function netejarFormularis() {
     }
 }
 
-//Creacio de la classe cicle
-class Cicle {
-    constructor(nom, categoria, numAlumnes, abreviatura) {
-        this.nom = nom;
-        this.categoria = categoria;
-        this.numAlumnes = numAlumnes;
-        this.abreviatura = abreviatura;
-        this.numEdicions = 0;
-        this.ultimaEdicio = null;
-        this.moduls = [];
-    }
-
-    setNumEdicions() {
-        this.numEdicions++;
-        this.ultimaEdicio = new Date();
-    }
-
-
-    toString() {
-        let str = `${this.abreviatura.toUpperCase()}. ${this.nom}\nCategoria: ${this.categoria}\nNúmero d'alumnes: ${this.numAlumnes}\nNúmero d'edicions: ${this.numEdicions}\nÚltima edició: ${this.ultimaEdicio}\nMòduls:\n`;
-        this.moduls.sort((a, b) => a.num - b.num).forEach(modul => {
-            str += `Nom: ${modul.nom}, Número: ${modul.num}, Hores: ${modul.hores}\n`;
-        });
-        return str;
-    }
-
-    calculHores(i) {
-        console.log("llega calcul hores");
-        let totalHores = 0;
-        llistatCicles[i].moduls.forEach(modul => {
-            totalHores += parseInt(modul.modul_hores);
-        });
-        console.log(totalHores);
-        alert(`Hores totals del cicle: ${totalHores}`);
-    }
-}    
-
-//Creacio de la classe modul
-class Modul {
-    constructor(cicle, modul_nom, modul_num, modul_hores) {
-        this.cicle = cicle;
-        this.modul_nom = modul_nom;
-        this.modul_num = modul_num;
-        this.modul_hores = modul_hores;
-    }
-    toString() {
-        let str = `MP${this.modul_num}. ${this.modul_nom} (${this.modul_hores})`;
-        console.log("modul tostring");
-        console.log(str);
-        return str;
-    }
-}
 let btnAfegirCicle = document.getElementById('btnAfegirCicle');
 let btnAfegirModul = document.getElementById('btnAfegirModul');
 let btnCalculaHores = document.getElementById('btnCalculaHores');
@@ -243,3 +182,8 @@ let llistat = document.getElementById('llistat');
 
 llistat.addEventListener(str);
 
+window.editCicle = editCicle;
+window.calculHores = calculHores;
+window.netejarFormularis = netejarFormularis;
+window.actualitzarSelector = actualitzarSelector;
+window.removeCicle = removeCicle;
