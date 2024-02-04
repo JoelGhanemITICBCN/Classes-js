@@ -26,14 +26,14 @@ export class Cicle {
     calculHores() {
         let totalHores = 0;
         this.moduls.forEach(modul => {
-            totalHores += parseInt(modul.hores);  
+            totalHores += parseInt(modul.modul_hores);  
         });
         console.log(totalHores);
         alert(`Hores totals del cicle: ${totalHores}`);
     }
-    afegirModul(modul_nom, modul_num, modul_hores) {
-        let modul = new Modul(modul_nom, modul_num, modul_hores);
+    afegirModul(modul) {
         this.moduls.push(modul);
+        this.moduls = this.moduls.sort();
     }
 }    
 

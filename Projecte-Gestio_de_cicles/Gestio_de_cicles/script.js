@@ -40,7 +40,7 @@ function afegirModul() {
     console.log(modul);
 
     if (cicleIndex >= 0 && cicleIndex < llistatCicles.length) {
-        llistatCicles[cicleIndex].afegirModul(modul_nom, modul_num, modul_hores);
+        llistatCicles[cicleIndex].afegirModul(modul);
         console.log("llistatModuls");
         console.log(llistatCicles[cicleIndex].moduls);
     }
@@ -102,7 +102,7 @@ function addEventListeners(llistat) {
         document.getElementById(`btnCalculaHores${index}`).addEventListener('click', function (event) {
             // Instancia cicle
         console.log(llistatCicles[index].moduls);
-                llistatCicles[index].calculHores(index);
+                llistatCicles[index].calculHores();
             
         });
     });
